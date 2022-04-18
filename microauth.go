@@ -1,8 +1,8 @@
-// Package nanoauth provides a uniform means of serving HTTP/S for golang
+// Package microauth provides a uniform means of serving HTTP/S for golang
 // projects securely. It allows the specification of a certificate (or
 // generates one) as well as an auth token which is checked before the request
 // is processed.
-package nanoauth
+package microauth
 
 import (
 	"crypto/subtle"
@@ -27,8 +27,8 @@ var (
 )
 
 func init() {
-	DefaultAuth.Header = "X-NANOBOX-TOKEN"
-	DefaultAuth.Certificate, _ = Generate("nanobox.io")
+	DefaultAuth.Header = "X-MICROBOX-TOKEN"
+	DefaultAuth.Certificate, _ = Generate("microbox.cloud")
 }
 
 // ServeHTTP is to implement the http.Handler interface. Also let clients know
@@ -69,7 +69,7 @@ func (self *Auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 // ListenAndServeTLS starts a TLS listener and handles serving https
 func (self *Auth) ListenAndServeTLS(addr, token string, h http.Handler, excludedPaths ...string) error {
 	if token == "" {
-		return errors.New("nanoauth: token missing")
+		return errors.New("microauth: token missing")
 	}
 	config := &tls.Config{
 		Certificates: []tls.Certificate{*self.Certificate},
@@ -95,7 +95,7 @@ func (self *Auth) ListenAndServeTLS(addr, token string, h http.Handler, excluded
 // still validating the auth token.
 func (self *Auth) ListenAndServe(addr, token string, h http.Handler, excludedPaths ...string) error {
 	if token == "" {
-		return errors.New("nanoauth: token missing")
+		return errors.New("microauth: token missing")
 	}
 	httpListener, err := net.Listen("tcp", addr)
 	if err != nil {

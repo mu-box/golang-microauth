@@ -1,4 +1,4 @@
-package nanoauth_test
+package microauth_test
 
 import (
 	"crypto/tls"
@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nanobox-io/golang-nanoauth"
+	microauth "github.com/mu-box/golang-microauth"
 )
 
 func ExampleListenAndServe() {
@@ -18,7 +18,7 @@ func ExampleListenAndServe() {
 		io.WriteString(rw, "World, Hello!\n")
 	})
 
-	nanoauth.ListenAndServe("127.0.0.1:80", "secret", nil)
+	microauth.ListenAndServe("127.0.0.1:80", "secret", nil)
 }
 
 func ExampleListenAndServeTLS() {
@@ -26,11 +26,11 @@ func ExampleListenAndServeTLS() {
 		io.WriteString(rw, "World, Hello!\n")
 	})
 
-	cert, _ := nanoauth.Generate("nanoauth.nanopack.io")
-	nanoauth.DefaultAuth.Header = "X-AUTH-TOKEN"
-	nanoauth.DefaultAuth.Certificate = cert
+	cert, _ := microauth.Generate("microauth.microbox.cloud")
+	microauth.DefaultAuth.Header = "X-AUTH-TOKEN"
+	microauth.DefaultAuth.Certificate = cert
 
-	nanoauth.ListenAndServeTLS("127.0.0.1:443", "secret", nil)
+	microauth.ListenAndServeTLS("127.0.0.1:443", "secret", nil)
 }
 
 // TestMain initializes the environment and runs the tests
@@ -51,16 +51,16 @@ func TestMain(m *testing.M) {
 func TestListenServe(t *testing.T) {
 	address1 := "127.0.0.1:8081"
 
-	go nanoauth.ListenAndServe(address1, "$ECRET", nil)
+	go microauth.ListenAndServe(address1, "$ECRET", nil)
 	time.Sleep(time.Second)
 
 	// test good request
-	req, err := newReq(address1, "/?X-NANOBOX-TOKEN=$ECRET")
+	req, err := newReq(address1, "/?X-MICROBOX-TOKEN=$ECRET")
 	if err != nil {
 		t.Errorf("Failed to create request - %v", err)
 		t.FailNow()
 	}
-	req.Host = "nanobox-router.test"
+	req.Host = "microbox-router.test"
 
 	resp, err := getIt(req)
 	if err != nil {
@@ -78,8 +78,8 @@ func TestListenServe(t *testing.T) {
 		t.Errorf("Failed to create request - %v", err)
 		t.FailNow()
 	}
-	req.Header.Add("X-NANOBOX-TOKEN", "PUBLIC")
-	req.Host = "nanobox-router.test"
+	req.Header.Add("X-MICROBOX-TOKEN", "PUBLIC")
+	req.Host = "microbox-router.test"
 
 	resp, err = getIt(req)
 	if err != nil {
@@ -96,7 +96,7 @@ func TestListenServe(t *testing.T) {
 func TestListenServeTLS(t *testing.T) {
 	address2 := "127.0.0.1:8082"
 
-	go nanoauth.ListenAndServeTLS(address2, "$ECRET", nil)
+	go microauth.ListenAndServeTLS(address2, "$ECRET", nil)
 	time.Sleep(time.Second)
 
 	// test good request
@@ -105,8 +105,8 @@ func TestListenServeTLS(t *testing.T) {
 		t.Errorf("Failed to create request - %v", err)
 		t.FailNow()
 	}
-	req.Header.Add("X-NANOBOX-TOKEN", "$ECRET")
-	req.Host = "nanobox-router.test"
+	req.Header.Add("X-MICROBOX-TOKEN", "$ECRET")
+	req.Host = "microbox-router.test"
 
 	resp, err := getIt(req)
 	if err != nil {
@@ -124,8 +124,8 @@ func TestListenServeTLS(t *testing.T) {
 		t.Errorf("Failed to create request - %v", err)
 		t.FailNow()
 	}
-	req.Header.Add("X-NANOBOX-TOKEN", "PUBLIC")
-	req.Host = "nanobox-router.test"
+	req.Header.Add("X-MICROBOX-TOKEN", "PUBLIC")
+	req.Host = "microbox-router.test"
 
 	resp, err = getIt(req)
 	if err != nil {
@@ -146,17 +146,17 @@ func TestLoad(t *testing.T) {
 		t.FailNow()
 	}
 
-	_, err = nanoauth.Load("/tmp/pub.crt", "/tmp/priv.key", "")
+	_, err = microauth.Load("/tmp/pub.crt", "/tmp/priv.key", "")
 	if err != nil {
 		t.Errorf("Failed to load key/cert - %v", err)
 	}
 
 	// test failed loading
-	_, err = nanoauth.Load("/tmp/no-way-hose", "/tmp/priv.key", "")
+	_, err = microauth.Load("/tmp/no-way-hose", "/tmp/priv.key", "")
 	if err == nil {
 		t.Errorf("Failed to fail loading key/cert - %v", err)
 	}
-	_, err = nanoauth.Load("/tmp/pub.crt", "/tmp/no-way-a", "")
+	_, err = microauth.Load("/tmp/pub.crt", "/tmp/no-way-a", "")
 	if err == nil {
 		t.Errorf("Failed to fail loading key/cert - %v", err)
 	}

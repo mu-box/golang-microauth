@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/nanobox-io/golang-nanoauth.svg)](https://travis-ci.org/nanobox-io/golang-nanoauth)
-[![GoDoc](https://godoc.org/github.com/nanobox-io/golang-nanoauth?status.svg)](https://godoc.org/github.com/nanobox-io/golang-nanoauth)
+[![Build Status](https://travis-ci.org/mu-box/golang-microauth.svg)](https://travis-ci.org/mu-box/golang-microauth)
+[![GoDoc](https://godoc.org/github.com/mu-box/golang-microauth?status.svg)](https://godoc.org/github.com/mu-box/golang-microauth)
 
-# golang-nanoauth
+# golang-microauth
 
-Nanoauth provides a uniform means of serving HTTP/S for golang projects securely. It allows the specification of a certificate (or generates one) as well as an auth token which is checked before the request is processed.
+Microauth provides a uniform means of serving HTTP/S for golang projects securely. It allows the specification of a certificate (or generates one) as well as an auth token which is checked before the request is processed.
 
 
 ## Quickstart
@@ -18,7 +18,7 @@ Import and serve
 >	"fmt"
 >	"io"
 >
->	"github.com/nanobox-io/golang-nanoauth"
+>	"github.com/mu-box/golang-microauth"
 >)
 >
 >func main() {>
@@ -27,7 +27,7 @@ Import and serve
 >  })
 >
 >	fmt.Printf("Stopped serving! - %v\n",
->		nanoauth.ListenAndServe("127.0.0.1:8081", "$ECRET", nil))
+>		microauth.ListenAndServe("127.0.0.1:8081", "$ECRET", nil))
 >}
 >```
 
@@ -39,7 +39,7 @@ $ curl localhost:8081 -i
 # Content-Length: 0
 # Content-Type: text/plain; charset=utf-8
 
-$ curl -H 'X-NANOBOX-TOKEN: $ECRET' localhost:8081 -i
+$ curl -H 'X-MICROBOX-TOKEN: $ECRET' localhost:8081 -i
 # HTTP/1.1 200 OK
 # Date: Thu, 09 Jun 2016 22:27:24 GMT
 # Content-Length: 14
@@ -54,8 +54,8 @@ $ curl -H 'X-NANOBOX-TOKEN: $ECRET' localhost:8081 -i
 Generate a cert and customize auth the token header
 ```go
 ...
-	cert, _ := nanoauth.Generate("logvac.nanopack.io")
-	auth := nanoauth.Auth{
+	cert, _ := microauth.Generate("logvac.microbox.cloud")
+	auth := microauth.Auth{
 		Header:      "X-AUTH-TOKEN",
 		Certificate: cert,
 	}
@@ -66,5 +66,5 @@ Generate a cert and customize auth the token header
 
 ## Contributing
 
-Contributions to the nanobox-router project are welcome and encouraged. Contributions should follow the [Nanobox Contribution Process & Guidelines](https://docs.nanobox.io/contributing/).
+Contributions to the microbox-router project are welcome and encouraged. Contributions should follow the [microbox Contribution Process & Guidelines](https://docs.microbox.cloud/contributing/).
 

@@ -1,4 +1,4 @@
-package nanoauth
+package microauth
 
 import (
 	"crypto/rand"
@@ -34,7 +34,7 @@ func Generate(host string) (*tls.Certificate, error) {
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
 			CommonName:   host,
-			Organization: []string{"Nanobox Acme Co"},
+			Organization: []string{"Microbox Acme Co"},
 		},
 		NotBefore: notBefore,
 		NotAfter:  notAfter,

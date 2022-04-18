@@ -1,4 +1,4 @@
-package nanoauth
+package microauth
 
 import (
 	"crypto/tls"
