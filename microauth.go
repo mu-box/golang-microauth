@@ -8,7 +8,6 @@ import (
 	"crypto/subtle"
 	"crypto/tls"
 	"errors"
-	"net"
 	"net/http"
 )
 
@@ -33,11 +32,11 @@ func init() {
 
 // ServeHTTP is to implement the http.Handler interface. Also let clients know
 // when I have no matching route listeners
-func (self *Auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (me *Auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	reqPath := req.URL.Path
 	skipOnce := false
 
-	for _, path := range self.ExcludedPaths {
+	for _, path := range me.ExcludedPaths {
 		if path == reqPath {
 			skipOnce = true
 			break
@@ -52,65 +51,57 @@ func (self *Auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	if !skipOnce {
 		auth := ""
-		if auth = req.Header.Get(self.Header); auth == "" {
+		if auth = req.Header.Get(me.Header); auth == "" {
 			// check form value (case sensitive) if header not set
-			auth = req.FormValue(self.Header)
+			auth = req.FormValue(me.Header)
 		}
 
-		if subtle.ConstantTimeCompare([]byte(auth), []byte(self.Token)) == 0 {
+		if subtle.ConstantTimeCompare([]byte(auth), []byte(me.Token)) == 0 {
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 	}
 
-	self.child.ServeHTTP(rw, req)
+	me.child.ServeHTTP(rw, req)
 }
 
 // ListenAndServeTLS starts a TLS listener and handles serving https
-func (self *Auth) ListenAndServeTLS(addr, token string, h http.Handler, excludedPaths ...string) error {
+func (me *Auth) ListenAndServeTLS(addr, token string, h http.Handler, excludedPaths ...string) error {
 	if token == "" {
 		return errors.New("microauth: token missing")
 	}
 	config := &tls.Config{
-		Certificates: []tls.Certificate{*self.Certificate},
-	}
-	config.BuildNameToCertificate()
-	tlsListener, err := tls.Listen("tcp", addr, config)
-	if err != nil {
-		return err
+		Certificates: []tls.Certificate{*me.Certificate},
 	}
 
-	self.ExcludedPaths = excludedPaths
-	self.Token = token
+	me.ExcludedPaths = excludedPaths
+	me.Token = token
 
 	if h == nil {
 		h = http.DefaultServeMux
 	}
-	self.child = h
+	me.child = h
 
-	return http.Serve(tlsListener, self)
+	server := &http.Server{Addr: addr, Handler: me, TLSConfig: config}
+	return server.ListenAndServeTLS("", "")
 }
 
 // ListenAndServe starts a normal tcp listener and handles serving http while
 // still validating the auth token.
-func (self *Auth) ListenAndServe(addr, token string, h http.Handler, excludedPaths ...string) error {
+func (me *Auth) ListenAndServe(addr, token string, h http.Handler, excludedPaths ...string) error {
 	if token == "" {
 		return errors.New("microauth: token missing")
 	}
-	httpListener, err := net.Listen("tcp", addr)
-	if err != nil {
-		return err
-	}
 
-	self.ExcludedPaths = excludedPaths
-	self.Token = token
+	me.ExcludedPaths = excludedPaths
+	me.Token = token
 
 	if h == nil {
 		h = http.DefaultServeMux
 	}
-	self.child = h
+	me.child = h
 
-	return http.Serve(httpListener, self)
+	return http.ListenAndServe(addr, me)
 }
 
 // ListenAndServeTLS is a shortcut function which uses the default one
