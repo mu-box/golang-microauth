@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mu-box/golang-microauth.svg)](https://travis-ci.org/mu-box/golang-microauth)
+[![Build Status](https://github.com/mu-box/golang-microauth/actions/workflows/ci.yaml/badge.svg)](https://github.com/mu-box/golang-microauth/actions)
 [![GoDoc](https://godoc.org/github.com/mu-box/golang-microauth?status.svg)](https://godoc.org/github.com/mu-box/golang-microauth)
 
 # golang-microauth
@@ -44,7 +44,7 @@ $ curl -H 'X-MICROBOX-TOKEN: $ECRET' localhost:8081 -i
 # Date: Thu, 09 Jun 2016 22:27:24 GMT
 # Content-Length: 14
 # Content-Type: text/plain; charset=utf-8
-# 
+#
 # World, hello!
 ```
 

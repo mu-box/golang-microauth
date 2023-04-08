@@ -1,6 +1,6 @@
 module github.com/mu-box/golang-microauth
 
-go 1.17
+go 1.20
 
 require go.step.sm/crypto v0.16.1
 
